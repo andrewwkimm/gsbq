@@ -1,0 +1,47 @@
+
+name: gsbq CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    defaults:
+      run:
+        shell: bash
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Build
+        run: |
+          poetry install
+          poetry run black tests
+          poetry run flake8 tests
+          poetry run mypy tests --ignore-missing-import
+          poetry run pytest --cov=gsbq --cov-report term --cov-report xml
+
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          env_vars: OS,PYTHON
+          name: Python ${{ matrix.python-version }} on ${{ runner.os }}
