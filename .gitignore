@@ -4,6 +4,7 @@
 /.pytest_cache
 /.venv
 /dist
+/google_service_account_key.json
 /venv
 /scratch/*
 
