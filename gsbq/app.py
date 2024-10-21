@@ -94,17 +94,22 @@ def upload_to_bigquery(
 
 
 if __name__ == "__main__":
-    sheet_name = "Sheet1"
     service_account_file = Path("google_service_account_key.json")
+
     spreadsheet_id = "1Ba5nr8nzBh2MSVzIOpvtmHtzWqjDT4aP5G2YBkZN1mk"
-    table_id = "gsbq-demo.gsbq_dataset.sample_table"
+    sheet_name = "Sheet1"
+
+    project_name = "gsbq-demo"
+    dataset_name = "gsbq_dataset"
+    table_name = "sample_table"
+    table_id = f"{project_name}.{dataset_name}.{table_name}"
 
     sheets_service, bq_client = authenticate(service_account_file)
 
     raw_data = get_sheet_data(sheets_service, spreadsheet_id, sheet_name)
     processed_data = convert_data_to_dataframe(raw_data)
 
-    dataset_id = ".".join(table_id.split(".")[:2])
+    dataset_id = f"{project_name}.{dataset_name}"
 
     create_dataset_if_not_exists(bq_client, dataset_id)
     create_table_if_not_exists(bq_client, table_id, processed_data)
