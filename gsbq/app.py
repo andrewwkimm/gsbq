@@ -36,6 +36,7 @@ def get_sheet_data(
 def create_dataset_if_not_exists(client: bigquery.Client, dataset_id: str) -> None:
     """Creates a BigQuery dataset if it doesn't exist."""
     dataset = bigquery.Dataset(dataset_id)
+
     try:
         client.get_dataset(dataset_id)
     except exceptions.NotFound:
@@ -48,6 +49,7 @@ def create_table_if_not_exists(
 ) -> None:
     """Creates a BigQuery table if it doesn't exist, using the Polars DataFrame schema."""
     schema = []
+
     for col_name, dtype in zip(df.columns, df.dtypes, strict=True):
         if dtype == pl.Int64:
             field_type = "INTEGER"
