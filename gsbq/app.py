@@ -74,9 +74,10 @@ def create_table_if_not_exists(
         print(f"Table {table_id} created.")
 
 
-def process_data(data: List[List[Any]]) -> pl.DataFrame:
+def convert_data_to_dataframe(data: List[List[Any]]) -> pl.DataFrame:
     """Processes the data using Polars."""
-    return pl.DataFrame(data[1:], schema=data[0], orient="row")
+    df = pl.DataFrame(data[1:], schema=data[0], orient="row")
+    return df
 
 
 def upload_to_bigquery(
@@ -101,7 +102,7 @@ if __name__ == "__main__":
     sheets_service, bq_client = authenticate(service_account_file)
 
     raw_data = get_sheet_data(sheets_service, spreadsheet_id, sheet_name)
-    processed_data = process_data(raw_data)
+    processed_data = convert_data_to_dataframe(raw_data)
 
     dataset_id = ".".join(table_id.split(".")[:2])
 
