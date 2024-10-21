@@ -29,10 +29,8 @@ def get_sheet_data(
 ) -> List[List[Any]]:
     """Retrieves all data from a Google Sheet."""
     sheet = service.spreadsheets()
-    result = (
-        sheet.values().get(spreadsheetId=spreadsheet_id, range=sheet_name).execute()
-    )
-    return result.get("values", [])
+    data = sheet.values().get(spreadsheetId=spreadsheet_id, range=sheet_name).execute()
+    return data.get("values", [])
 
 
 def create_dataset_if_not_exists(client: bigquery.Client, dataset_id: str) -> None:
@@ -66,6 +64,7 @@ def create_table_if_not_exists(
         schema.append(bigquery.SchemaField(col_name, field_type))
 
     table = bigquery.Table(table_id, schema=schema)
+
     try:
         client.get_table(table_id)
     except exceptions.NotFound:
